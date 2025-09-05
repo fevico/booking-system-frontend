@@ -4,6 +4,10 @@
 import { useState, FormEvent } from 'react';
 import { toast } from 'react-toastify';
 import { registerUser } from '@/libs/api';
+import { Input } from "@/components/ui/input"
+
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 interface FormData {
   name: string;
@@ -74,15 +78,8 @@ export default function Home() {
         className="bg-white p-8 rounded shadow-md w-full max-w-md"
       >
         <h1 className="text-2xl font-bold mb-6">Event Registration</h1>
-        <input
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
-          className="mb-4 p-2 border w-full"
-          required
-        />
-        <input
+        <Input name="name" placeholder='name' value={formData.name} onChange={handleChange} className='mb-4 p-2 border w-full' required/>
+        <Input
           name="email"
           type="email"
           placeholder="Email"
@@ -91,7 +88,7 @@ export default function Home() {
           className="mb-4 p-2 border w-full"
           required
         />
-        <input
+        <Input
           name="phone"
           placeholder="Phone (+1234567890)"
           value={formData.phone}
@@ -99,7 +96,7 @@ export default function Home() {
           className="mb-4 p-2 border w-full"
           required
         />
-        <input
+        <Input
           name="pin"
           placeholder="4-digit PIN"
           value={formData.pin}
@@ -107,7 +104,7 @@ export default function Home() {
           className="mb-4 p-2 border w-full"
           required
         />
-        <input
+        <Input
           name="organization"
           placeholder="Organization"
           value={formData.organization}
@@ -119,7 +116,7 @@ export default function Home() {
           name="category"
           value={formData.category}
           onChange={handleChange}
-          className="mb-4 p-2 border w-full"
+          className="mb-4 p-2 border-2 w-full"
           required
         >
           <option value="student">Student</option>
@@ -127,11 +124,10 @@ export default function Home() {
           <option value="press">Press</option>
           <option value="others">Others</option>
         </select>
-        <button type="submit" className="bg-blue-500 text-white p-2 w-full">
-          Register
-        </button>
+
+        <Button type="submit" className="bg-blue-500 text-white p-2 w-full">Register</Button>
         {message && <p className="mt-4 text-center">{message}</p>}
-        {qrCode && <img src={qrCode} alt="QR Code" className="mt-4 mx-auto" />}
+        {qrCode && <Image src={qrCode} alt="QR Code" className="mt-4 mx-auto" />}
       </form>
     </div>
   );

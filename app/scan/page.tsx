@@ -70,7 +70,7 @@
 import { useEffect, useRef, useState } from 'react';
 import jsQR from 'jsqr';
 import { verifyQR } from '@/libs/api';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 interface VerifyResponse {
   message: string;
