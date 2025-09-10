@@ -15,7 +15,7 @@ interface FormData {
   phone: string;
   pin: string;
   organization: string;
-  category: 'student' | 'academia' | 'press' | 'others';
+  category: 'Student' | 'Academia' | 'Press' | 'Others';
 }
 
 interface ResponseData {
@@ -30,7 +30,7 @@ export default function Home() {
     phone: '',
     pin: '',
     organization: '',
-    category: 'student',
+    category: 'Student',
   });
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
@@ -58,7 +58,7 @@ export default function Home() {
         phone: '',
         pin: '',
         organization: '',
-        category: 'student',
+        category: 'Student',
       });
     } catch (err: any) {
       console.log(err, 'error message');
@@ -119,10 +119,10 @@ export default function Home() {
           className="mb-4 p-2 border-2 w-full"
           required
         >
-          <option value="student">Student</option>
-          <option value="academia">Academia</option>
-          <option value="press">Press</option>
-          <option value="others">Others</option>
+          <option value="Student">Student</option>
+          <option value="Academia">Academia</option>
+          <option value="Press">Press</option>
+          <option value="Others">Others</option>
         </select>
 
         <Button type="submit" className="bg-blue-500 text-white p-2 w-full">Register</Button>
