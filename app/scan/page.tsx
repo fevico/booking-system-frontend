@@ -1,80 +1,15 @@
-// // 'use client';
-
-// // import { useEffect, useRef, useState } from 'react';
-// // import jsQR from 'jsqr';
-// // import axios, { AxiosResponse } from 'axios';
-
-// // interface VerifyResponse {
-// //   message: string;
-// //   scans: number;
-// // }
-
-// // export default function Scan() {
-// //   const videoRef = useRef<HTMLVideoElement>(null);
-// //   const canvasRef = useRef<HTMLCanvasElement>(null);
-// //   const [result, setResult] = useState<string>('');
-
-// //   useEffect(() => {
-// //     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-// //       .then(stream => {
-// //         if (videoRef.current) {
-// //           videoRef.current.srcObject = stream;
-// //           videoRef.current.play();
-// //           requestAnimationFrame(scan);
-// //         }
-// //       });
-
-// //     const scan = () => {
-// //       if (videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
-// //         const canvas = canvasRef.current;
-// //         if (canvas) {
-// //           canvas.height = videoRef.current.videoHeight;
-// //           canvas.width = videoRef.current.videoWidth;
-// //           const ctx = canvas.getContext('2d');
-// //           if (ctx) {
-// //             ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-// //             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-// //             const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-// //             if (code) {
-// //               verifyQR(code.data);
-// //             }
-// //           }
-// //         }
-// //       }
-// //       requestAnimationFrame(scan);
-// //     };
-// //   }, []);
-
-// //   const verifyQR = async (qrData: string) => {
-// //     try {
-// //       const res: AxiosResponse<VerifyResponse> = await axios.post('http://localhost:5000/api/users/verify', { qrData });
-// //       setResult(res.data.message);
-// //     } catch (err: any) {
-// //       setResult('Error verifying');
-// //     }
-// //   };
-
-// //   return (
-// //     <div className="min-h-screen flex flex-col items-center justify-center">
-// //       <video ref={videoRef} className="w-full max-w-md" />
-// //       <canvas ref={canvasRef} className="hidden" />
-// //       {result && <p className="mt-4 text-xl">{result}</p>}
-// //     </div>
-// //   );
-// // }
-
 
 // 'use client';
 
 // import { useEffect, useRef, useState } from 'react';
 // import jsQR from 'jsqr';
 // import { verifyQR } from '@/libs/api';
-// import { toast } from 'react-toastify';
+// import { toast, ToastContainer } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 
 // interface VerifyResponse {
 //   message: string;
-//   scans: number;
+//   lastScan?: string | null;
 //   name?: string;
 //   organization?: string;
 // }
@@ -157,19 +92,15 @@
 //               <strong>Organization:</strong> {result.organization || 'N/A'}
 //             </p>
 //             <p className="text-gray-700">
-//               <strong>Scan Count:</strong> {result.scans}
+//               <strong>Last Scan:</strong> {result.lastScan ? new Date(result.lastScan).toLocaleString() : 'N/A'}
 //             </p>
-//             <div className="mt-4 text-center">
-//               <span className="inline-block bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-//                 {result.scans > 1 ? 'Returning Guest' : 'First-Time Guest'}
-//               </span>
-//             </div>
 //           </div>
 //         )}
 //       </div>
+//       <ToastContainer position="top-right" autoClose={3000} />
 //     </div>
 //   );
-// }
+// }   
 
 
 
@@ -177,6 +108,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import jsQR from 'jsqr';
 import { verifyQR } from '@/libs/api';
 import { toast, ToastContainer } from 'react-toastify';
@@ -193,8 +125,16 @@ export default function Scan() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [result, setResult] = useState<VerifyResponse | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    if (!token || role !== 'scanner') {
+      toast.error('Unauthorized: Scanner access required');
+      router.push('/login');
+    }
+
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
       .then(stream => {
         if (videoRef.current) {
@@ -231,11 +171,12 @@ export default function Scan() {
       }
       requestAnimationFrame(scan);
     };
-  }, []);
+  }, [router]);
 
   const verifyQRCode = async (qrData: string) => {
     try {
-      const res = await verifyQR({ qrData });
+      const token = localStorage.getItem('token') || '';
+      const res = await verifyQR({ qrData }, token);
       setResult(res);
       toast.success('QR code verified successfully', {
         position: 'top-right',

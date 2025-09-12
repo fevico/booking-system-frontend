@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface FormData {
   name: string;
@@ -72,7 +73,13 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <>
+    <div className="flex">
+      <Link href="/login" className="absolute top-4 right-4">
+        <Button>Login</Button> 
+      </Link>
+    </div>
+       <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded shadow-md w-full max-w-md"
@@ -130,5 +137,6 @@ export default function Home() {
         {qrCode && <Image src={qrCode} alt="QR Code" className="mt-4 mx-auto" />}
       </form>
     </div>
+    </>
   );
 }
